@@ -1,5 +1,10 @@
 const { validateSearchTerm } = require("../validations/validations");
 const axiosInstance = require("../lib/axios.lib");
+const {
+  doesUserIdExist,
+  doesBookExist,
+  createBook,
+} = require("../services/bookServices");
 
 const searchBook = async (req, res) => {
   const searchTerm = req.query.query;
@@ -28,4 +33,25 @@ const searchBook = async (req, res) => {
   }
 };
 
-module.exports = { searchBook };
+const saveBook = async (req, res) => {
+  const body = req.body;
+  try {
+    const value = await doesUserIdExist(body.userId);
+    if (value === false)
+      return res.status(404).json({ error: "Invalid userId" });
+
+    const value2 = await doesBookExist(body);
+    if (value2 === true)
+      return res.status(400).json({ error: "Book already exist" });
+
+    const response = await createBook(body);
+
+    return res
+      .status(201)
+      .json({ message: "Book saved successfully", book: response });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { searchBook, saveBook };
