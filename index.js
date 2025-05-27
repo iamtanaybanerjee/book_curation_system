@@ -3,6 +3,7 @@ const cors = require("cors");
 const { sequelize } = require("./models");
 require("pg");
 const { addUser } = require("./controllers/userControllers");
+const { searchBook } = require("./controllers/bookControllers");
 
 const app = express();
 
@@ -10,6 +11,7 @@ app.use(express.json());
 app.use(cors());
 
 app.post("/api/users", addUser);
+app.get("/api/books/search", searchBook);
 
 sequelize
   .authenticate()

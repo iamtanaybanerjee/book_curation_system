@@ -15,4 +15,12 @@ const validateEmail = (email) => {
   );
 };
 
-module.exports = { validateUserBodyParams, validateEmail };
+const validateSearchTerm = (query) => {
+  let error;
+
+  if (!query) error = "search query is required";
+
+  return error;
+};
+
+module.exports = { validateUserBodyParams, validateEmail, validateSearchTerm };
