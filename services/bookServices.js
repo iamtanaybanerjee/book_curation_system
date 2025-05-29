@@ -1,4 +1,9 @@
-const { User: UserModel, Book: BookModel } = require("../models");
+const {
+  User: UserModel,
+  Book: BookModel,
+  BookTag: BookTagModel,
+  Tag: TagModel,
+} = require("../models");
 
 const doesUserIdExist = async (userId) => {
   try {
@@ -42,4 +47,69 @@ const createBook = async (body) => {
   }
 };
 
-module.exports = { doesUserIdExist, doesBookExist, createBook };
+const doesTagExistForBook = async (body) => {
+  console.log("doesTagExistForBook", body);
+  try {
+    const tagObj = await TagModel.findOne({
+      where: {
+        name: body.tagName,
+      },
+    });
+
+    console.log("tagObj", tagObj);
+
+    let bookTagObj;
+
+    if (tagObj) {
+      bookTagObj = await BookTagModel.findOne({
+        where: {
+          bookId: body.bookId,
+          tagId: tagObj.id,
+        },
+      });
+    }
+
+    if (bookTagObj) return true;
+    else return false;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const createTagForBook = async (body) => {
+  console.log("abc");
+  console.log(body.bookId);
+  try {
+    const tagObj = await TagModel.create({
+      name: body.tagName,
+    });
+
+    const bookObj = await BookModel.findOne({
+      where: {
+        id: body.bookId,
+      },
+    });
+
+    console.log("tagObj", tagObj);
+    console.log("bookObj", bookObj);
+
+    const bookTagObj = await BookTagModel.create({
+      bookId: bookObj.id,
+      tagId: tagObj.id,
+    });
+
+    console.log(bookTagObj);
+
+    return tagObj;
+  } catch (error) {
+    throw error;
+  }
+};
+
+module.exports = {
+  doesUserIdExist,
+  doesBookExist,
+  createBook,
+  doesTagExistForBook,
+  createTagForBook,
+};

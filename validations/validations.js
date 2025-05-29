@@ -23,4 +23,17 @@ const validateSearchTerm = (query) => {
   return error;
 };
 
-module.exports = { validateUserBodyParams, validateEmail, validateSearchTerm };
+const validateBookId = (body) => {
+  console.log("validateBookId function body", body);
+  let error;
+
+  if (!body.bookId) error = "Book id is required";
+
+  return error;
+};
+module.exports = {
+  validateUserBodyParams,
+  validateEmail,
+  validateSearchTerm,
+  validateBookId,
+};

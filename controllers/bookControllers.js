@@ -1,9 +1,14 @@
-const { validateSearchTerm } = require("../validations/validations");
+const {
+  validateSearchTerm,
+  validateBookId,
+} = require("../validations/validations");
 const axiosInstance = require("../lib/axios.lib");
 const {
   doesUserIdExist,
   doesBookExist,
   createBook,
+  doesTagExistForBook,
+  createTagForBook,
 } = require("../services/bookServices");
 
 const searchBook = async (req, res) => {
@@ -54,4 +59,26 @@ const saveBook = async (req, res) => {
   }
 };
 
-module.exports = { searchBook, saveBook };
+const addTagToBook = async (req, res) => {
+  const body = req.body;
+  console.log(body);
+  try {
+    const error = validateBookId(body);
+    if (error) return res.status(400).json({ error });
+
+    const value = await doesTagExistForBook(body);
+    if (value === true)
+      return res.status(400).json({ error: "Tag already exist for this book" });
+
+    const response = await createTagForBook(body);
+
+    return res.status(201).json({
+      message: "Tag added successfully",
+      tag: { id: response.id, bookId: body.bookId, name: response.name },
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+module.exports = { searchBook, saveBook, addTagToBook };
